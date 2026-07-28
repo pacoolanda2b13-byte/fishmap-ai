@@ -1,0 +1,3 @@
+# FishMap AI
+
+Repository initialized.
