@@ -1,6 +1,39 @@
 # FishMap AI — Architecture MVP
 
-Version: 0.1
+Version: 0.2
+
+## Règles d'architecture
+
+Ces règles sont contraignantes et vérifiées automatiquement lorsque c'est
+possible.
+
+1. **Indépendance des packages.** Aucun package métier ne dépend d'un autre
+   package métier. On doit pouvoir supprimer `packages/weather` sans casser
+   `packages/fishscore`, et inversement. Tous ne dépendent que de
+   `packages/core`. Vérifié par
+   `packages/core/test/architecture_rules_test.dart`.
+2. **Composition explicite.** Les assemblages entre packages métier vivent dans
+   des couches dédiées (`packages/scoring_pipeline`), seules autorisées à
+   dépendre de plusieurs d'entre eux.
+3. **FishScore isolé.** Le moteur reste indépendant de Flutter, de Supabase et
+   de la couche météo.
+4. **Pression atmosphérique.** Elle reste un modificateur borné (±6 %) et ne
+   devient jamais une composante pondérée principale.
+5. **Pipeline météo figé.**
+   `WeatherData → WeatherMapper → FishScoreInput → FishScore`.
+6. **Connaissances pilotées par les données.** `knowledge/species/*.json` est
+   la seule source de vérité de la calibration ; le catalogue Dart est généré
+   et sa fraîcheur est vérifiée en CI.
+
+### Dépendances des packages
+
+```text
+            scoring_pipeline          ← composition
+             /            \
+        fishscore        weather      ← métier (ne se connaissent pas)
+             \            /
+                  core                ← socle commun
+```
 
 ## Choix principal
 

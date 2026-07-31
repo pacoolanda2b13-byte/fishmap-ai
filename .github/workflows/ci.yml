@@ -18,8 +18,10 @@ jobs:
       fail-fast: false
       matrix:
         package:
+          - core
           - fishscore
           - weather
+          - scoring_pipeline
     defaults:
       run:
         working-directory: packages/${{ matrix.package }}
@@ -42,3 +44,24 @@ jobs:
 
       - name: Run tests
         run: dart test
+
+  generated-code:
+    name: Species catalog is up to date
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Dart
+        uses: dart-lang/setup-dart@v1
+        with:
+          sdk: stable
+
+      - name: Install dependencies
+        run: dart pub get
+        working-directory: packages/fishscore
+
+      # knowledge/species/*.json is the single source of truth: fail if the
+      # generated catalog was not regenerated after editing a sheet.
+      - name: Check generated species catalog
+        run: dart run tool/generate_species_catalog.dart --check
+        working-directory: packages/fishscore

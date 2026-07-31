@@ -2,7 +2,7 @@
 
 ## Progression globale
 
-Avancement estimé : **22 %**
+Avancement estimé : **35 %** (évaluation CTO, session 3)
 
 Cette estimation mesure le chemin jusqu’à une première bêta Android testable, pas seulement la documentation.
 
@@ -87,10 +87,37 @@ Livrables :
 - suivi des métriques ;
 - préparation iOS.
 
+## Ordre de développement (arbitrage CTO, session 3)
+
+Les données réelles avant l'interface : l'application pourra ainsi consommer
+immédiatement une API fonctionnelle.
+
+1. [x] `packages/core` — socle commun ;
+2. [x] architecture météo multi-fournisseurs (`WeatherRepository`) ;
+3. [ ] `OpenMeteoProvider` — premier adaptateur réel ;
+4. [ ] backend Supabase — migrations versionnées et fonctions serveur ;
+5. [ ] Flutter — application mobile ;
+6. [ ] notifications ;
+7. [ ] IA de prédiction ;
+8. [ ] optimisations.
+
+## Règles d'architecture actées
+
+- `fishscore` reste indépendant de Flutter, Supabase et `weather` ;
+- la pression atmosphérique demeure un **modificateur borné (±6 %)**, jamais
+  une composante principale ;
+- le pipeline `WeatherData → WeatherMapper → FishScoreInput → FishScore` est
+  définitif ;
+- aucun package métier ne dépend d'un autre package métier ; seules les couches
+  de composition (`scoring_pipeline`) assemblent plusieurs packages — règle
+  vérifiée automatiquement en CI ;
+- `knowledge/species/*.json` est la **seule** source de vérité de la
+  calibration ; le catalogue Dart est généré.
+
 ## Prochain seuil
 
-**30 %** sera atteint lorsque la Phase 5 aura démarré côté code :
+**45 %** sera atteint lorsque :
 
-1. initialisation de l'application Flutter `apps/mobile` ;
-2. intégration du package `fishscore` dans un premier écran d'évaluation ;
-3. migrations Supabase versionnées et fonction serveur d'évaluation FishScore.
+1. `OpenMeteoProvider` alimentera la chaîne avec des données réelles ;
+2. les migrations Supabase seront versionnées et appliquées ;
+3. une fonction serveur exposera l'évaluation FishScore via le contrat API.
