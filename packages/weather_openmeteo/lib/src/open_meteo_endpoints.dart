@@ -43,7 +43,8 @@ class OpenMeteoEndpoints {
   ];
 
   /// URL de l'API prévision pour la fenêtre \[from, to].
-  Uri forecast(Coordinates location, {required DateTime from, required DateTime to}) =>
+  Uri forecast(Coordinates location,
+          {required DateTime from, required DateTime to}) =>
       Uri.https(forecastHost, '/v1/forecast', <String, String>{
         ..._commonParameters(location, from: from, to: to),
         'hourly': forecastHourlyVariables.join(','),
@@ -54,7 +55,8 @@ class OpenMeteoEndpoints {
       });
 
   /// URL de l'API marine pour la fenêtre \[from, to].
-  Uri marine(Coordinates location, {required DateTime from, required DateTime to}) =>
+  Uri marine(Coordinates location,
+          {required DateTime from, required DateTime to}) =>
       Uri.https(marineHost, '/v1/marine', <String, String>{
         ..._commonParameters(location, from: from, to: to),
         'hourly': marineHourlyVariables.join(','),

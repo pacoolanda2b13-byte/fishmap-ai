@@ -115,7 +115,8 @@ class OpenMeteoProvider implements WeatherProvider {
   ///
   /// Traduit toute défaillance (réseau, délai, statut HTTP, JSON invalide,
   /// erreur applicative Open-Meteo) en [WeatherProviderException].
-  Future<Map<String, dynamic>> _getJson(Uri uri, {required String label}) async {
+  Future<Map<String, dynamic>> _getJson(Uri uri,
+      {required String label}) async {
     final http.Response response;
     try {
       response = await _http.get(uri).timeout(timeout);

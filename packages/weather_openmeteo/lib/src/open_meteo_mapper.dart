@@ -48,8 +48,8 @@ class OpenMeteoMapper {
         gustSpeedKmh: _speed(forecast, 'wind_gusts_10m', instant),
         airTemperatureC: _temperature(forecast, 'temperature_2m', instant),
         pressureHpa: _pressure(forecast, 'pressure_msl', instant),
-        precipitationMm: _length(forecast, 'precipitation', instant,
-            millimetres: true),
+        precipitationMm:
+            _length(forecast, 'precipitation', instant, millimetres: true),
         cloudCoverPct: _percentage(forecast, 'cloud_cover', instant),
         waveHeightM: _length(marine, 'wave_height', instant),
         wavePeriodS: _seconds(marine, 'wave_period', instant),
