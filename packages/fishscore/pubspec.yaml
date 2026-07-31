@@ -1,0 +1,17 @@
+name: fishscore
+description: >-
+  Moteur de scoring FishScore pour FishMap AI. Compare des créneaux et des spots
+  de pêche à partir des conditions météo, marines et de l'historique local.
+  Pur Dart, sans dépendance à Flutter, afin de rester testable et réutilisable.
+version: 1.0.0
+publish_to: none
+
+environment:
+  sdk: ">=3.4.0 <4.0.0"
+
+dependencies:
+  meta: ^1.11.0
+
+dev_dependencies:
+  lints: ^4.0.0
+  test: ^1.25.0

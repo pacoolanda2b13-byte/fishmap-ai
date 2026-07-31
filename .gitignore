@@ -31,6 +31,9 @@ DerivedData/
 *.pem
 *.key
 
+# Dart library lockfiles (apps commit theirs, libraries don't)
+packages/*/pubspec.lock
+
 # Supabase
 supabase/.temp/
 
