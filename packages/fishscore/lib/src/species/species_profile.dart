@@ -15,6 +15,12 @@ class HourWindow {
   final int startHour;
   final int endHour;
 
+  /// Construit une fenêtre à partir d'un couple `[début, fin]`.
+  factory HourWindow.fromJson(List<dynamic> json) => HourWindow(
+        (json[0] as num).toInt(),
+        (json[1] as num).toInt(),
+      );
+
   /// Vrai si [hour] appartient à la fenêtre (bornes incluses).
   bool contains(int hour) {
     if (startHour <= endHour) {
@@ -23,6 +29,9 @@ class HourWindow {
     // Fenêtre traversant minuit.
     return hour >= startHour || hour <= endHour;
   }
+
+  /// Sérialise la fenêtre en couple `[début, fin]`.
+  List<int> toJson() => <int>[startHour, endHour];
 }
 
 /// Préférences de température et de saison d'une espèce.
@@ -45,7 +54,33 @@ class ThermalPreference {
   /// Note de saison (0-100) par saison.
   final Map<Season, int> seasonScores;
 
+  /// Construit une préférence thermique depuis le bloc `thermal` d'une fiche.
+  factory ThermalPreference.fromJson(Map<String, dynamic> json) {
+    final Map<String, dynamic> rawScores =
+        (json['season_scores'] as Map<String, dynamic>?) ?? const {};
+    return ThermalPreference(
+      idealMinC: (json['ideal_min_c'] as num).toDouble(),
+      idealMaxC: (json['ideal_max_c'] as num).toDouble(),
+      toleranceC: (json['tolerance_c'] as num).toDouble(),
+      seasonScores: <Season, int>{
+        for (final MapEntry<String, dynamic> e in rawScores.entries)
+          Season.values.byName(e.key): (e.value as num).toInt(),
+      },
+    );
+  }
+
   int seasonScore(Season season) => seasonScores[season] ?? 50;
+
+  /// Sérialise la préférence thermique.
+  Map<String, dynamic> toJson() => <String, dynamic>{
+        'ideal_min_c': idealMinC,
+        'ideal_max_c': idealMaxC,
+        'tolerance_c': toleranceC,
+        'season_scores': <String, int>{
+          for (final MapEntry<Season, int> e in seasonScores.entries)
+            e.key.name: e.value,
+        },
+      };
 }
 
 /// Profil de calibration d'une espèce pour le moteur FishScore.
@@ -75,6 +110,57 @@ class SpeciesProfile {
     required this.favorsSpringTide,
     this.weightOverrides = const {},
   });
+
+  /// Construit un profil à partir d'une fiche de connaissance
+  /// (`knowledge/species/<slug>.json`).
+  ///
+  /// La calibration reste ainsi pilotée par les données et jamais codée en dur
+  /// dans le moteur.
+  factory SpeciesProfile.fromJson(Map<String, dynamic> json) {
+    final Map<String, dynamic> cal =
+        json['calibration'] as Map<String, dynamic>;
+    final Map<String, dynamic> wind = cal['wind'] as Map<String, dynamic>;
+    final Map<String, dynamic> waves = cal['waves'] as Map<String, dynamic>;
+    final Map<String, dynamic> hours = cal['hours'] as Map<String, dynamic>;
+    final Map<String, dynamic> depth = cal['depth'] as Map<String, dynamic>;
+    final Map<String, dynamic> moon = cal['moon'] as Map<String, dynamic>;
+    final Map<String, dynamic> bottoms =
+        (cal['bottoms'] as Map<String, dynamic>?) ?? const {};
+    final Map<String, dynamic> overrides =
+        (cal['weight_overrides'] as Map<String, dynamic>?) ?? const {};
+
+    List<HourWindow> windows(String key) =>
+        ((hours[key] as List<dynamic>?) ?? const <dynamic>[])
+            .map((dynamic w) => HourWindow.fromJson(w as List<dynamic>))
+            .toList(growable: false);
+
+    return SpeciesProfile(
+      slug: json['slug'] as String,
+      commonNameFr: json['common_name_fr'] as String,
+      windIdealMaxKmh: (wind['ideal_max_kmh'] as num).toDouble(),
+      windTolerableMaxKmh: (wind['tolerable_max_kmh'] as num).toDouble(),
+      waveIdealMinM: (waves['ideal_min_m'] as num).toDouble(),
+      waveIdealMaxM: (waves['ideal_max_m'] as num).toDouble(),
+      waveFalloffM: (waves['falloff_m'] as num).toDouble(),
+      primeHours: windows('prime'),
+      goodHours: windows('good'),
+      baselineHourScore: (hours['baseline_score'] as num).toInt(),
+      thermal:
+          ThermalPreference.fromJson(cal['thermal'] as Map<String, dynamic>),
+      preferredBottoms: <BottomType, int>{
+        for (final MapEntry<String, dynamic> e in bottoms.entries)
+          BottomType.values.byName(e.key): (e.value as num).toInt(),
+      },
+      depthIdealMinM: (depth['ideal_min_m'] as num).toDouble(),
+      depthIdealMaxM: (depth['ideal_max_m'] as num).toDouble(),
+      depthFalloffM: (depth['falloff_m'] as num).toDouble(),
+      favorsSpringTide: moon['favors_spring_tide'] as bool,
+      weightOverrides: <String, double>{
+        for (final MapEntry<String, dynamic> e in overrides.entries)
+          e.key: (e.value as num).toDouble(),
+      },
+    );
+  }
 
   /// Identifiant stable de l'espèce.
   final String slug;
@@ -133,4 +219,39 @@ class SpeciesProfile {
     if (bottom == BottomType.unknown) return 50;
     return preferredBottoms[bottom] ?? 35;
   }
+
+  /// Sérialise le profil au format d'une fiche de connaissance (identité +
+  /// bloc `calibration`). Réciproque de [SpeciesProfile.fromJson].
+  Map<String, dynamic> toJson() => <String, dynamic>{
+        'slug': slug,
+        'common_name_fr': commonNameFr,
+        'calibration': <String, dynamic>{
+          'wind': <String, dynamic>{
+            'ideal_max_kmh': windIdealMaxKmh,
+            'tolerable_max_kmh': windTolerableMaxKmh,
+          },
+          'waves': <String, dynamic>{
+            'ideal_min_m': waveIdealMinM,
+            'ideal_max_m': waveIdealMaxM,
+            'falloff_m': waveFalloffM,
+          },
+          'hours': <String, dynamic>{
+            'prime': primeHours.map((HourWindow w) => w.toJson()).toList(),
+            'good': goodHours.map((HourWindow w) => w.toJson()).toList(),
+            'baseline_score': baselineHourScore,
+          },
+          'thermal': thermal.toJson(),
+          'bottoms': <String, int>{
+            for (final MapEntry<BottomType, int> e in preferredBottoms.entries)
+              e.key.name: e.value,
+          },
+          'depth': <String, dynamic>{
+            'ideal_min_m': depthIdealMinM,
+            'ideal_max_m': depthIdealMaxM,
+            'falloff_m': depthFalloffM,
+          },
+          'moon': <String, dynamic>{'favors_spring_tide': favorsSpringTide},
+          'weight_overrides': weightOverrides,
+        },
+      };
 }

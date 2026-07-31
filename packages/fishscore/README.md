@@ -57,6 +57,22 @@ print(result.explanation);
 
 Voir `example/fishscore_example.dart` pour une démonstration complète.
 
+## Calibration des espèces
+
+La calibration n'est **jamais codée en dur** : la source de vérité est le
+dossier [`knowledge/species`](../../knowledge/species) à la racine du dépôt.
+Chaque fiche `<slug>.json` est convertie en `SpeciesProfile` via
+`SpeciesProfile.fromJson`, et `SpeciesProfile.toJson` fait l'opération inverse.
+
+Le `SpeciesCatalog` embarqué sert de valeur par défaut hors-ligne ; un test
+(`test/species_knowledge_test.dart`) vérifie qu'il reste cohérent avec les
+fiches. Pour ajuster la calibration, on modifie la fiche JSON, pas le code.
+
+```dart
+final profile = SpeciesProfile.fromJson(jsonDecode(sheetContent));
+final engine = FishScoreEngine(speciesProfiles: {profile.slug: profile});
+```
+
 ## Extensibilité
 
 Le moteur accepte une liste de composantes et un catalogue d'espèces
