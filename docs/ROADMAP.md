@@ -2,7 +2,7 @@
 
 ## Progression globale
 
-Avancement estimé : **17 %**
+Avancement estimé : **22 %**
 
 Cette estimation mesure le chemin jusqu’à une première bêta Android testable, pas seulement la documentation.
 
@@ -43,10 +43,11 @@ Livrables :
 - [x] README ;
 - [x] PRD v0.1 ;
 - [x] roadmap initiale ;
-- [ ] schéma PostgreSQL/PostGIS ;
-- [ ] règles FishScore v1 ;
-- [ ] contrat API ;
-- [ ] architecture de confidentialité ;
+- [x] schéma PostgreSQL/PostGIS ;
+- [x] règles FishScore v1 ;
+- [x] moteur FishScore v1 (package Dart `packages/fishscore`, testé, CI) ;
+- [x] contrat API ;
+- [x] architecture de confidentialité ;
 - [ ] design system ;
 - [ ] parcours UX détaillés ;
 - [ ] backlog du Sprint 1 prêt pour développement.
@@ -88,8 +89,8 @@ Livrables :
 
 ## Prochain seuil
 
-**20 %** sera atteint lorsque la Phase 4 possédera :
+**30 %** sera atteint lorsque la Phase 5 aura démarré côté code :
 
-1. un schéma de données cohérent ;
-2. une spécification FishScore v1 ;
-3. un backlog Sprint 1 prêt à être confié à Codex ou à un développeur.
+1. initialisation de l'application Flutter `apps/mobile` ;
+2. intégration du package `fishscore` dans un premier écran d'évaluation ;
+3. migrations Supabase versionnées et fonction serveur d'évaluation FishScore.
