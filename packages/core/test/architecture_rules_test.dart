@@ -17,6 +17,12 @@ void main() {
   /// Couches de composition : autorisées à assembler plusieurs packages.
   const Set<String> compositionPackages = <String>{'scoring_pipeline'};
 
+  /// Adaptateurs : implémentent le contrat d'un seul package métier (leur
+  /// port) et ne dépendent donc que de `core` et de ce package.
+  const Map<String, String> adapterPackages = <String, String>{
+    'weather_openmeteo': 'weather',
+  };
+
   final Directory packagesDir = _findPackagesDir();
 
   Set<String> localDependenciesOf(String package) {
@@ -69,6 +75,34 @@ void main() {
     test('les couches de composition dépendent bien de core', () {
       for (final String package in compositionPackages) {
         expect(localDependenciesOf(package), contains('core'));
+      }
+    });
+
+    for (final MapEntry<String, String> entry in adapterPackages.entries) {
+      test('${entry.key} ne dépend que de core et de ${entry.value}', () {
+        final Set<String> deps = localDependenciesOf(entry.key);
+        final Set<String> forbidden =
+            deps.difference(<String>{'core', entry.value});
+        expect(
+          forbidden,
+          isEmpty,
+          reason: '${entry.key} dépend de $forbidden : un adaptateur ne doit '
+              'connaître que son port (${entry.value}) et core.',
+        );
+        expect(deps, contains(entry.value),
+            reason: '${entry.key} doit implémenter le contrat de '
+                '${entry.value}');
+      });
+    }
+
+    test('aucun package métier ne dépend d\'un adaptateur', () {
+      for (final String package in businessPackages) {
+        final Set<String> deps = localDependenciesOf(package);
+        for (final String adapter in adapterPackages.keys) {
+          expect(deps.contains(adapter), isFalse,
+              reason: '$package dépend de l\'adaptateur $adapter : '
+                  'l\'inversion de dépendance est cassée');
+        }
       }
     });
   });
