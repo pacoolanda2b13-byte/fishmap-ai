@@ -22,6 +22,10 @@
 /// ```
 library;
 
+export 'src/cache/cached_forecast.dart';
+export 'src/cache/weather_cache.dart';
+export 'src/cache/weather_cache_key.dart';
+export 'src/cache/weather_cache_store.dart';
 export 'src/models/weather_data.dart';
 export 'src/models/weather_forecast.dart';
 export 'src/providers/static_weather_provider.dart';
