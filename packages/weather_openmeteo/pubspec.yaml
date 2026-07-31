@@ -1,0 +1,22 @@
+name: weather_openmeteo
+description: >-
+  Adaptateur Open-Meteo pour FishMap AI. Implémente le contrat WeatherProvider
+  du package weather : HTTP, JSON, conversion d'unités, rien d'autre. Aucune
+  logique métier.
+version: 0.1.0
+publish_to: none
+
+environment:
+  sdk: ">=3.4.0 <4.0.0"
+
+dependencies:
+  meta: ^1.11.0
+  http: ^1.2.0
+  core:
+    path: ../core
+  weather:
+    path: ../weather
+
+dev_dependencies:
+  lints: ^4.0.0
+  test: ^1.25.0
