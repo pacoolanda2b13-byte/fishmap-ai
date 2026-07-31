@@ -22,6 +22,7 @@ export 'src/engine/fish_score_engine.dart'
 export 'src/models/enums.dart';
 export 'src/models/fish_score_input.dart';
 export 'src/models/fish_score_result.dart';
+export 'src/models/knowledge.dart';
 export 'src/models/local_history.dart';
 export 'src/models/moon_phase.dart';
 export 'src/species/species_catalog.dart';

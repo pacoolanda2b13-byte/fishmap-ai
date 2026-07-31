@@ -1,6 +1,7 @@
 import 'package:meta/meta.dart';
 
 import '../models/enums.dart';
+import '../models/knowledge.dart';
 
 /// Plage horaire fermée \[startHour, endHour] en heures locales (0-23).
 ///
@@ -109,6 +110,8 @@ class SpeciesProfile {
     required this.depthFalloffM,
     required this.favorsSpringTide,
     this.weightOverrides = const {},
+    this.confidence = KnowledgeConfidence.hypothesis,
+    this.sources = const <KnowledgeSource>[],
   });
 
   /// Construit un profil à partir d'une fiche de connaissance
@@ -159,6 +162,13 @@ class SpeciesProfile {
         for (final MapEntry<String, dynamic> e in overrides.entries)
           e.key: (e.value as num).toDouble(),
       },
+      confidence: json['confidence'] == null
+          ? KnowledgeConfidence.hypothesis
+          : KnowledgeConfidence.values.byName(json['confidence'] as String),
+      sources: ((json['sources'] as List<dynamic>?) ?? const <dynamic>[])
+          .map((dynamic s) =>
+              KnowledgeSource.fromJson(s as Map<String, dynamic>))
+          .toList(growable: false),
     );
   }
 
@@ -207,6 +217,20 @@ class SpeciesProfile {
   /// Surcharges de poids de composantes propres à l'espèce (identifiant → poids).
   final Map<String, double> weightOverrides;
 
+  /// Niveau de confiance de la calibration (hypothèse / observé / validé).
+  final KnowledgeConfidence confidence;
+
+  /// Sources traçables justifiant la calibration.
+  final List<KnowledgeSource> sources;
+
+  /// Résumé de provenance en français, pour l'explicabilité produit.
+  ///
+  /// Exemple : « 42 observations terrain + 3 publications scientifiques ».
+  /// Sans source référencée, indique le statut de calibration.
+  String get provenanceSummaryFr =>
+      summarizeSourcesFr(sources) ??
+      'Calibration en ${confidence.labelFr}, aucune source référencée';
+
   /// Note horaire (0-100) pour une heure locale donnée.
   int hourScore(int hour) {
     if (primeHours.any((HourWindow w) => w.contains(hour))) return 100;
@@ -225,6 +249,8 @@ class SpeciesProfile {
   Map<String, dynamic> toJson() => <String, dynamic>{
         'slug': slug,
         'common_name_fr': commonNameFr,
+        'confidence': confidence.name,
+        'sources': sources.map((KnowledgeSource s) => s.toJson()).toList(),
         'calibration': <String, dynamic>{
           'wind': <String, dynamic>{
             'ideal_max_kmh': windIdealMaxKmh,

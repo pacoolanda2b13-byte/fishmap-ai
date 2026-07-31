@@ -57,20 +57,36 @@ print(result.explanation);
 
 Voir `example/fishscore_example.dart` pour une démonstration complète.
 
-## Calibration des espèces
+## Calibration des espèces (générée, jamais codée en dur)
 
-La calibration n'est **jamais codée en dur** : la source de vérité est le
-dossier [`knowledge/species`](../../knowledge/species) à la racine du dépôt.
-Chaque fiche `<slug>.json` est convertie en `SpeciesProfile` via
-`SpeciesProfile.fromJson`, et `SpeciesProfile.toJson` fait l'opération inverse.
+La **seule source de vérité** est le dossier
+[`knowledge/species`](../../knowledge/species). Le catalogue Dart embarqué est
+**généré automatiquement** :
 
-Le `SpeciesCatalog` embarqué sert de valeur par défaut hors-ligne ; un test
-(`test/species_knowledge_test.dart`) vérifie qu'il reste cohérent avec les
-fiches. Pour ajuster la calibration, on modifie la fiche JSON, pas le code.
+```
+knowledge/species/*.json ──▶ tool/generate_species_catalog.dart ──▶ species_catalog.g.dart
+```
+
+Après modification d'une fiche :
+
+```bash
+dart run tool/generate_species_catalog.dart        # régénère le catalogue
+dart run tool/generate_species_catalog.dart --check # vérification (CI)
+```
+
+Aucun profil n'est modifié à la main. `SpeciesProfile.fromJson` reste
+disponible pour charger une fiche dynamiquement (backend, mises à jour à
+chaud).
+
+### Traçabilité
+
+Chaque profil porte son niveau de confiance (`hypothesis` / `observed` /
+`validated`) et ses **sources typées** (Ifremer, publications scientifiques,
+guides de pêche, observations terrain). Le résumé de provenance est exposé :
 
 ```dart
-final profile = SpeciesProfile.fromJson(jsonDecode(sheetContent));
-final engine = FishScoreEngine(speciesProfiles: {profile.slug: profile});
+SpeciesCatalog.bySlug('loup')!.provenanceSummaryFr;
+// ex. « 42 observations terrain + 3 publications scientifiques »
 ```
 
 ## Extensibilité
