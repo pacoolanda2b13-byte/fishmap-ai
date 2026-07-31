@@ -23,6 +23,7 @@ jobs:
           - packages/weather
           - packages/weather_openmeteo
           - packages/scoring_pipeline
+          - packages/edge_bridge
           - example
     defaults:
       run:
@@ -69,3 +70,38 @@ jobs:
       - name: Check generated species catalog
         run: dart run tool/generate_species_catalog.dart --check
         working-directory: packages/fishscore
+
+  edge-functions:
+    name: Supabase Edge Functions (lint + test)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Dart
+        uses: dart-lang/setup-dart@v1
+        with:
+          sdk: stable
+
+      - name: Set up Deno
+        uses: denoland/setup-deno@v2
+        with:
+          deno-version: v2.x
+
+      # bridge.js is a build artifact kept out of version control; the Edge
+      # Function cannot run without it.
+      - name: Build Dart bridge
+        run: ./tool/build_edge_bridge.sh
+
+      - name: Check formatting
+        run: deno fmt --check
+        working-directory: supabase/functions
+
+      - name: Lint
+        run: deno lint
+        working-directory: supabase/functions
+
+      # Tests drive the real compiled bridge over frozen fixtures: no network
+      # and no database are required.
+      - name: Run tests
+        run: deno test --allow-read --allow-env evaluate/handler_test.ts
+        working-directory: supabase/functions
