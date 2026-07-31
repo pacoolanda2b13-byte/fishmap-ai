@@ -2,7 +2,8 @@
 
 ## Progression globale
 
-Avancement estimé : **35 %** (évaluation CTO, session 3)
+Avancement estimé : **45 %** — backend complet, prêt à être consommé par
+l'application Flutter.
 
 Cette estimation mesure le chemin jusqu’à une première bêta Android testable, pas seulement la documentation.
 
@@ -96,7 +97,8 @@ immédiatement une API fonctionnelle.
 2. [x] architecture météo multi-fournisseurs (`WeatherRepository`) ;
 3. [x] `OpenMeteoProvider` — premier adaptateur réel, avec démonstration
    exécutable `example/` ;
-4. [ ] backend Supabase — migrations versionnées et fonctions serveur ;
+4. [x] backend Supabase — migrations versionnées, cache météo et Edge Function
+   `POST /evaluate` ;
 5. [ ] Flutter — application mobile ;
 6. [ ] notifications ;
 7. [ ] IA de prédiction ;
@@ -117,8 +119,22 @@ immédiatement une API fonctionnelle.
 
 ## Prochain seuil
 
-**45 %** sera atteint lorsque :
+**60 %** sera atteint lorsque l'application Flutter consommera l'API :
 
-1. [x] `OpenMeteoProvider` alimentera la chaîne avec des données réelles ;
-2. [ ] les migrations Supabase seront versionnées et appliquées ;
-3. [ ] une fonction serveur exposera l'évaluation FishScore via le contrat API.
+1. [ ] initialisation `apps/mobile` (Riverpod, GoRouter) ;
+2. [ ] écran d'évaluation branché sur `POST /evaluate` ;
+3. [ ] carte et authentification Supabase.
+
+## Dette technique identifiée
+
+Relevée lors de la revue de fin de session 5, par ordre de priorité :
+
+1. **4 lectures de cache par requête** au lieu d'une — l'évaluation boucle sur
+   les espèces et chacune interroge le dépôt météo.
+2. **Aucune limitation de débit** sur `/evaluate`, alors que le contrat API
+   prévoit 60 lectures/minute.
+3. **Pas de protection contre les rafales de cache** : des requêtes
+   simultanées identiques appellent toutes le fournisseur.
+4. **Entrées de cache périmées jamais supprimées** par l'application ; la
+   fonction `purge_expired_weather_cache()` existe mais n'est pas planifiée.
+5. **`CORS_ALLOWED_ORIGIN` vaut `*` par défaut** — à restreindre en production.
