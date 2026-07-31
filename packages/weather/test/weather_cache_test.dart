@@ -313,6 +313,71 @@ void main() {
     });
   });
 
+  group('résilience du magasin', () {
+    WeatherCache cacheWithFailingStore({
+      bool failRead = false,
+      bool failWrite = false,
+    }) =>
+        WeatherCache(
+          store: SerializedWeatherCacheStore(
+            readJson: (String k) async =>
+                failRead ? throw StateError('base indisponible') : null,
+            writeJson: (String k, String json) async {
+              if (failWrite) throw StateError('base indisponible');
+            },
+            deleteKey: (String k) async {},
+          ),
+        );
+
+    test('une lecture en échec équivaut à une absence', () async {
+      final WeatherCache cache = cacheWithFailingStore(failRead: true);
+      expect(await cache.read(corse, from: from, to: to), isNull);
+    });
+
+    test('une écriture en échec ne fait pas échouer l\'appel', () async {
+      final WeatherCache cache = cacheWithFailingStore(failWrite: true);
+      final CachedForecast entry = await cache.write(
+        corse,
+        from: from,
+        to: to,
+        forecast: forecastOf(windSpeedKmh: 19),
+        providerName: 'open-meteo',
+      );
+      // La prévision reste exploitable même sans persistance.
+      expect(entry.forecast.samples.single.windSpeedKmh, 19);
+    });
+
+    test('la panne est journalisée', () async {
+      final MemoryLogger logger = MemoryLogger();
+      final WeatherCache cache = WeatherCache(
+        logger: logger,
+        store: SerializedWeatherCacheStore(
+          readJson: (String k) async => throw StateError('panne'),
+          writeJson: (String k, String json) async {},
+          deleteKey: (String k) async {},
+        ),
+      );
+
+      await cache.read(corse, from: from, to: to);
+      expect(logger.hasMessageContaining('illisible'), isTrue);
+    });
+
+    test('le dépôt sert quand même une prévision si le cache tombe', () async {
+      final WeatherRepository repository = WeatherRepository(
+        providers: <WeatherProvider>[
+          StaticWeatherProvider(forecastOf(), name: 'open-meteo'),
+        ],
+        cache: cacheWithFailingStore(failRead: true, failWrite: true),
+      );
+
+      final Result<ProviderForecast> result =
+          await repository.fetchForecast(corse, from: from, to: to);
+
+      expect(result.isSuccess, isTrue);
+      expect(result.valueOrNull!.providerName, 'open-meteo');
+    });
+  });
+
   group('InMemoryWeatherCacheStore', () {
     test('évince la plus ancienne entrée au-delà de la capacité', () async {
       final FixedTimeProvider clock =

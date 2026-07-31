@@ -66,13 +66,23 @@ class WeatherCache {
   ///
   /// Une entrée périmée est supprimée au passage : le cache se nettoie de
   /// lui-même sans tâche de maintenance dédiée.
+  /// Une défaillance du magasin est traitée comme une absence : le cache
+  /// accélère les réponses, il ne conditionne pas leur production.
   Future<CachedForecast?> read(
     Coordinates location, {
     required DateTime from,
     required DateTime to,
   }) async {
     final WeatherCacheKey key = keyFor(location, from: from, to: to);
-    final CachedForecast? entry = await _store.read(key.value);
+
+    final CachedForecast? entry;
+    try {
+      entry = await _store.read(key.value);
+    } catch (e) {
+      _logger.warning('Cache météo illisible, traité comme absent', error: e);
+      return null;
+    }
+
     if (entry == null) {
       _logger.debug('Cache météo : absent (${key.value})');
       return null;
@@ -80,7 +90,11 @@ class WeatherCache {
 
     if (entry.isExpired(_time.nowUtc())) {
       _logger.debug('Cache météo : périmé (${key.value})');
-      await _store.delete(key.value);
+      try {
+        await _store.delete(key.value);
+      } catch (e) {
+        _logger.warning('Éviction du cache impossible', error: e);
+      }
       return null;
     }
 
@@ -104,8 +118,14 @@ class WeatherCache {
       expiresAt: now.add(ttl),
     );
     final WeatherCacheKey key = keyFor(location, from: from, to: to);
-    await _store.write(key.value, entry);
-    _logger.debug('Cache météo : écrit (${key.value})');
+    try {
+      await _store.write(key.value, entry);
+      _logger.debug('Cache météo : écrit (${key.value})');
+    } catch (e) {
+      // Ne pas faire échouer une réponse valide parce que le cache est en
+      // panne : la donnée sera simplement recalculée au prochain appel.
+      _logger.warning('Écriture du cache impossible', error: e);
+    }
     return entry;
   }
 
