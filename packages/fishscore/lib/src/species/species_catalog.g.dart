@@ -29,7 +29,7 @@ const Map<String, SpeciesProfile> kGeneratedSpeciesProfiles =
         Season.summer: 85,
         Season.autumn: 100,
         Season.spring: 55,
-        Season.winter: 25,
+        Season.winter: 25
       },
     ),
     preferredBottoms: <BottomType, int>{
@@ -38,7 +38,7 @@ const Map<String, SpeciesProfile> kGeneratedSpeciesProfiles =
       BottomType.mixed: 70,
       BottomType.gravel: 55,
       BottomType.sand: 40,
-      BottomType.mud: 25,
+      BottomType.mud: 25
     },
     depthIdealMinM: 3,
     depthIdealMaxM: 25,
@@ -67,7 +67,7 @@ const Map<String, SpeciesProfile> kGeneratedSpeciesProfiles =
         Season.summer: 100,
         Season.autumn: 85,
         Season.spring: 55,
-        Season.winter: 25,
+        Season.winter: 25
       },
     ),
     preferredBottoms: <BottomType, int>{
@@ -76,7 +76,7 @@ const Map<String, SpeciesProfile> kGeneratedSpeciesProfiles =
       BottomType.gravel: 75,
       BottomType.mixed: 65,
       BottomType.mud: 60,
-      BottomType.rock: 45,
+      BottomType.rock: 45
     },
     depthIdealMinM: 2,
     depthIdealMaxM: 15,
@@ -105,7 +105,7 @@ const Map<String, SpeciesProfile> kGeneratedSpeciesProfiles =
         Season.summer: 100,
         Season.autumn: 70,
         Season.spring: 45,
-        Season.winter: 15,
+        Season.winter: 15
       },
     ),
     preferredBottoms: <BottomType, int>{
@@ -114,7 +114,7 @@ const Map<String, SpeciesProfile> kGeneratedSpeciesProfiles =
       BottomType.posidonia: 70,
       BottomType.gravel: 70,
       BottomType.rock: 65,
-      BottomType.mud: 40,
+      BottomType.mud: 40
     },
     depthIdealMinM: 2,
     depthIdealMaxM: 20,
@@ -135,7 +135,7 @@ const Map<String, SpeciesProfile> kGeneratedSpeciesProfiles =
     primeHours: <HourWindow>[
       HourWindow(5, 8),
       HourWindow(18, 23),
-      HourWindow(0, 2),
+      HourWindow(0, 2)
     ],
     goodHours: <HourWindow>[HourWindow(8, 10), HourWindow(16, 18)],
     baselineHourScore: 30,
@@ -147,7 +147,7 @@ const Map<String, SpeciesProfile> kGeneratedSpeciesProfiles =
         Season.autumn: 100,
         Season.spring: 90,
         Season.winter: 75,
-        Season.summer: 55,
+        Season.summer: 55
       },
     ),
     preferredBottoms: <BottomType, int>{
@@ -156,7 +156,7 @@ const Map<String, SpeciesProfile> kGeneratedSpeciesProfiles =
       BottomType.sand: 70,
       BottomType.gravel: 65,
       BottomType.posidonia: 60,
-      BottomType.mud: 40,
+      BottomType.mud: 40
     },
     depthIdealMinM: 1,
     depthIdealMaxM: 15,

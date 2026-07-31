@@ -29,12 +29,32 @@ void main(List<String> args) {
     exit(1);
   }
 
-  final String generated = _format(_generate(sheets));
-
   final File output = File(outputPath);
+  final String? previous =
+      output.existsSync() ? output.readAsStringSync() : null;
+
+  // Le formatage doit avoir lieu *dans* le package : `dart format` s'appuie
+  // sur la version de langage du pubspec environnant. Formater ailleurs (un
+  // dossier temporaire, par exemple) produirait un style différent de celui
+  // que la CI applique, et le contrôle de fraîcheur deviendrait instable.
+  output.writeAsStringSync(_generate(sheets));
+  final ProcessResult formatted =
+      Process.runSync('dart', <String>['format', outputPath]);
+  if (formatted.exitCode != 0) {
+    if (previous != null) output.writeAsStringSync(previous);
+    stderr.writeln('dart format a échoué : ${formatted.stderr}');
+    exit(1);
+  }
+  final String generated = output.readAsStringSync();
+
   if (checkOnly) {
-    final String current = output.existsSync() ? output.readAsStringSync() : '';
-    if (current != generated) {
+    if (previous != generated) {
+      // Ne pas laisser l'arborescence modifiée par une simple vérification.
+      if (previous != null) {
+        output.writeAsStringSync(previous);
+      } else {
+        output.deleteSync();
+      }
       stderr.writeln(
         'Catalogue obsolète : lancez '
         '"dart run tool/generate_species_catalog.dart" puis committez '
@@ -46,27 +66,7 @@ void main(List<String> args) {
     return;
   }
 
-  output.writeAsStringSync(generated);
   stdout.writeln('Généré $outputPath (${sheets.length} espèces).');
-}
-
-/// Passe le code généré par `dart format` (via un fichier temporaire) pour
-/// garantir une sortie stable et conforme au vérificateur de format de la CI.
-String _format(String source) {
-  final Directory tmp = Directory.systemTemp.createTempSync('fishscore_gen');
-  try {
-    final File f = File('${tmp.path}/generated.dart')
-      ..writeAsStringSync(source);
-    final ProcessResult result =
-        Process.runSync('dart', <String>['format', f.path]);
-    if (result.exitCode != 0) {
-      stderr.writeln('dart format a échoué : ${result.stderr}');
-      exit(1);
-    }
-    return f.readAsStringSync();
-  } finally {
-    tmp.deleteSync(recursive: true);
-  }
 }
 
 Directory _findKnowledgeDir() {
