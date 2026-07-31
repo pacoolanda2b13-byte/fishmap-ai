@@ -18,13 +18,15 @@ jobs:
       fail-fast: false
       matrix:
         package:
-          - core
-          - fishscore
-          - weather
-          - scoring_pipeline
+          - packages/core
+          - packages/fishscore
+          - packages/weather
+          - packages/weather_openmeteo
+          - packages/scoring_pipeline
+          - example
     defaults:
       run:
-        working-directory: packages/${{ matrix.package }}
+        working-directory: ${{ matrix.package }}
     steps:
       - uses: actions/checkout@v4
 
@@ -42,6 +44,8 @@ jobs:
       - name: Analyze
         run: dart analyze --fatal-infos
 
+      # Aucun test ne sort sur le réseau : les fournisseurs distants sont
+      # rejoués depuis des fixtures figées.
       - name: Run tests
         run: dart test
 

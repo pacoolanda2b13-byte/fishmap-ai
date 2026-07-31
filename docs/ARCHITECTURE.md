@@ -28,11 +28,33 @@ possible.
 ### Dépendances des packages
 
 ```text
-            scoring_pipeline          ← composition
-             /            \
-        fishscore        weather      ← métier (ne se connaissent pas)
-             \            /
-                  core                ← socle commun
+                    example                    ← démonstration exécutable
+                   /       \
+       scoring_pipeline   weather_openmeteo    ← composition · adaptateur
+          /        \               │
+   fishscore      weather ◀────────┘            ← métier (ne se connaissent pas)
+          \        /
+             core                               ← socle commun
+```
+
+Un **adaptateur** (`weather_openmeteo`) implémente le contrat d'un seul package
+métier — son port — et ne dépend donc que de `core` et de ce port. Le port
+ignore totalement ses adaptateurs : ajouter StormGlass ou OpenWeather ne
+modifie aucun code existant.
+
+### Chaîne de données réelle
+
+```text
+Coordonnées + instant
+   │
+   ▼
+OpenMeteoProvider ──▶ WeatherRepository ──▶ WeatherMapper ──▶ FishScoreEngine
+ (HTTP · JSON ·        (repli · comparaison   (+ SpotContext)
+  conversion d'unités)  · hors ligne)
+                                                   │
+                                                   ▼
+                                            ScoredForecast
+                                  score · confiance · explication · provenance
 ```
 
 ## Choix principal

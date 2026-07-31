@@ -94,7 +94,8 @@ immédiatement une API fonctionnelle.
 
 1. [x] `packages/core` — socle commun ;
 2. [x] architecture météo multi-fournisseurs (`WeatherRepository`) ;
-3. [ ] `OpenMeteoProvider` — premier adaptateur réel ;
+3. [x] `OpenMeteoProvider` — premier adaptateur réel, avec démonstration
+   exécutable `example/` ;
 4. [ ] backend Supabase — migrations versionnées et fonctions serveur ;
 5. [ ] Flutter — application mobile ;
 6. [ ] notifications ;
@@ -118,6 +119,6 @@ immédiatement une API fonctionnelle.
 
 **45 %** sera atteint lorsque :
 
-1. `OpenMeteoProvider` alimentera la chaîne avec des données réelles ;
-2. les migrations Supabase seront versionnées et appliquées ;
-3. une fonction serveur exposera l'évaluation FishScore via le contrat API.
+1. [x] `OpenMeteoProvider` alimentera la chaîne avec des données réelles ;
+2. [ ] les migrations Supabase seront versionnées et appliquées ;
+3. [ ] une fonction serveur exposera l'évaluation FishScore via le contrat API.
