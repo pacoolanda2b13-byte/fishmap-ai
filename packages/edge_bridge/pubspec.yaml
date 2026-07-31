@@ -1,0 +1,29 @@
+name: edge_bridge
+description: >-
+  Pont entre la chaîne Dart de FishMap AI et les Edge Functions Supabase
+  (Deno). Compilé en JavaScript, il expose une fonction unique d'évaluation.
+  Les entrées/sorties (HTTP, cache PostgreSQL) sont injectées depuis
+  TypeScript, de sorte que toute l'orchestration reste en Dart.
+version: 0.1.0
+publish_to: none
+
+environment:
+  sdk: ">=3.4.0 <4.0.0"
+
+dependencies:
+  meta: ^1.11.0
+  http: ^1.2.0
+  core:
+    path: ../core
+  fishscore:
+    path: ../fishscore
+  weather:
+    path: ../weather
+  weather_openmeteo:
+    path: ../weather_openmeteo
+  scoring_pipeline:
+    path: ../scoring_pipeline
+
+dev_dependencies:
+  lints: ^4.0.0
+  test: ^1.25.0

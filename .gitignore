@@ -43,3 +43,8 @@ Thumbs.db
 
 # Logs
 *.log
+
+# Artefact compilé du pont Edge (régénéré au build)
+supabase/functions/_shared/bridge.js
+supabase/functions/_shared/bridge.js.deps
+supabase/functions/_shared/bridge.js.map
