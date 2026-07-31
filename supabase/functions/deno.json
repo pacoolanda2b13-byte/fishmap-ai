@@ -1,0 +1,15 @@
+{
+  "imports": {
+    "@supabase/supabase-js": "jsr:@supabase/supabase-js@^2"
+  },
+  "lint": {
+    "exclude": ["_shared/bridge.js"]
+  },
+  "fmt": {
+    "exclude": ["_shared/bridge.js"],
+    "lineWidth": 90
+  },
+  "tasks": {
+    "test": "deno test --allow-read --allow-env evaluate/handler_test.ts"
+  }
+}
