@@ -11,12 +11,18 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  fishscore:
-    name: Package fishscore (analyze + test)
+  dart-packages:
+    name: ${{ matrix.package }} (analyze + test)
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        package:
+          - fishscore
+          - weather
     defaults:
       run:
-        working-directory: packages/fishscore
+        working-directory: packages/${{ matrix.package }}
     steps:
       - uses: actions/checkout@v4
 
