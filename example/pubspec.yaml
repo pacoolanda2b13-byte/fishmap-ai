@@ -1,0 +1,27 @@
+name: fishmap_example
+description: >-
+  Démonstration exécutable de FishMap AI en Dart pur, sans Flutter. Évalue un
+  point réel à partir des données Open-Meteo et affiche le FishScore, sa
+  confiance, son explication et sa provenance.
+version: 0.1.0
+publish_to: none
+
+environment:
+  sdk: ">=3.4.0 <4.0.0"
+
+dependencies:
+  core:
+    path: ../packages/core
+  fishscore:
+    path: ../packages/fishscore
+  weather:
+    path: ../packages/weather
+  weather_openmeteo:
+    path: ../packages/weather_openmeteo
+  scoring_pipeline:
+    path: ../packages/scoring_pipeline
+
+dev_dependencies:
+  http: ^1.2.0
+  lints: ^4.0.0
+  test: ^1.25.0
