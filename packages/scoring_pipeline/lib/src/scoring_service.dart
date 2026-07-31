@@ -16,6 +16,8 @@ class ScoredForecast {
     required this.weatherProvider,
     required this.speciesConfidence,
     required this.knowledgeSummaryFr,
+    required this.evidenceScore,
+    this.weatherFromCache = false,
   });
 
   /// Résultat FishScore explicable.
@@ -31,9 +33,42 @@ class ScoredForecast {
   /// (ex. « 42 observations terrain + 3 publications scientifiques »).
   final String knowledgeSummaryFr;
 
+  /// Solidité des connaissances sur l'espèce, de 0 à 100.
+  ///
+  /// Distinct de `result.confidence`, qui mesure la qualité des données météo
+  /// du moment.
+  final int evidenceScore;
+
+  /// Vrai si la météo provenait du cache plutôt que d'un appel au fournisseur.
+  final bool weatherFromCache;
+
   /// Phrase de traçabilité prête pour l'affichage.
   String get provenanceFr =>
       'Météo : $weatherProvider. Connaissances : $knowledgeSummaryFr.';
+
+  /// Représentation JSON, contrat de sortie de l'API `/evaluate`.
+  Map<String, dynamic> toJson() => <String, dynamic>{
+        'score': result.score,
+        'level': result.level.name,
+        'confidence': result.confidence,
+        'evidence_score': evidenceScore,
+        'explanation': result.explanation,
+        'positive_factors': result.positiveFactors,
+        'negative_factors': result.negativeFactors,
+        'component_scores': <String, int?>{
+          for (final ComponentScore c in result.components)
+            if (c.available) c.id: c.score,
+        },
+        'model_version': result.modelVersion,
+        'limited_data': result.hasLimitedData,
+        'provenance': <String, dynamic>{
+          'summary': provenanceFr,
+          'weather_provider': weatherProvider,
+          'weather_from_cache': weatherFromCache,
+          'species_confidence': speciesConfidence.name,
+          'knowledge_summary': knowledgeSummaryFr,
+        },
+      };
 }
 
 /// Assemble météo + contexte de spot + moteur FishScore.
@@ -101,6 +136,8 @@ class ScoringService {
         weatherProvider: provided.providerName,
         speciesConfidence: profile.confidence,
         knowledgeSummaryFr: profile.provenanceSummaryFr,
+        evidenceScore: profile.evidenceScore,
+        weatherFromCache: provided.fromCache,
       ),
     );
   }

@@ -231,6 +231,31 @@ class SpeciesProfile {
       summarizeSourcesFr(sources) ??
       'Calibration en ${confidence.labelFr}, aucune source référencée';
 
+  /// Solidité des connaissances derrière la calibration, de 0 à 100.
+  ///
+  /// À ne pas confondre avec la confiance du FishScore : celle-ci mesure la
+  /// qualité des **données du moment** (météo disponible, fraîcheur), tandis
+  /// que l'`evidenceScore` mesure la qualité du **savoir sur l'espèce**.
+  ///
+  /// Combine le niveau déclaré et le volume de sources, avec des rendements
+  /// décroissants : une dixième observation pèse moins que la première.
+  int get evidenceScore {
+    final int base = switch (confidence) {
+      KnowledgeConfidence.hypothesis => 20,
+      KnowledgeConfidence.observed => 50,
+      KnowledgeConfidence.validated => 75,
+    };
+
+    final int totalSources =
+        sources.fold<int>(0, (int acc, KnowledgeSource s) => acc + s.count);
+    if (totalSources == 0) return base;
+
+    // Saturation : 0 source → 0 point, 12 sources → environ la moitié du
+    // complément disponible.
+    final double bonus = (100 - base) * (totalSources / (totalSources + 12));
+    return (base + bonus).round().clamp(0, 100);
+  }
+
   /// Note horaire (0-100) pour une heure locale donnée.
   int hourScore(int hour) {
     if (primeHours.any((HourWindow w) => w.contains(hour))) return 100;
