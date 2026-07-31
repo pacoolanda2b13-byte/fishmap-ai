@@ -38,8 +38,8 @@ void main() {
     });
 
     test('fusionne données atmosphériques et marines', () {
-      final WeatherData at19 = samples
-          .firstWhere((WeatherData s) => s.observedAt.hour == 19);
+      final WeatherData at19 =
+          samples.firstWhere((WeatherData s) => s.observedAt.hour == 19);
       // Atmosphère.
       expect(at19.windSpeedKmh, 14.4);
       expect(at19.gustSpeedKmh, 25.2);
@@ -56,7 +56,8 @@ void main() {
     });
 
     test('trace la source', () {
-      expect(samples.every((WeatherData s) => s.source == 'open-meteo'), isTrue);
+      expect(
+          samples.every((WeatherData s) => s.source == 'open-meteo'), isTrue);
     });
   });
 
@@ -154,8 +155,14 @@ void main() {
 
     test('normalise une direction hors bornes', () {
       final Map<String, dynamic> json = fixture('forecast_solenzara.json');
-      (json['hourly'] as Map<String, dynamic>)['wind_direction_10m'] =
-          <double>[360, 361, -10, 720, 45, 90];
+      (json['hourly'] as Map<String, dynamic>)['wind_direction_10m'] = <double>[
+        360,
+        361,
+        -10,
+        720,
+        45,
+        90
+      ];
       final List<WeatherData> samples =
           mapper.toWeatherData(forecastJson: json, source: 'open-meteo');
       expect(samples[0].windDirectionDeg, 0);
@@ -178,7 +185,9 @@ void main() {
       expect(
         () => mapper.toWeatherData(
           forecastJson: <String, dynamic>{
-            'hourly': <String, dynamic>{'temperature_2m': <double>[12]},
+            'hourly': <String, dynamic>{
+              'temperature_2m': <double>[12]
+            },
           },
           source: 'open-meteo',
         ),

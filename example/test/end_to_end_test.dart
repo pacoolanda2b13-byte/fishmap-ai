@@ -13,7 +13,8 @@ import 'package:weather_openmeteo/weather_openmeteo.dart';
 /// Fixtures partagées avec le paquet adaptateur : la chaîne est validée sur
 /// des réponses au format réel d'Open-Meteo, sans appel réseau.
 String fixtureText(String name) =>
-    File('../packages/weather_openmeteo/test/fixtures/$name').readAsStringSync();
+    File('../packages/weather_openmeteo/test/fixtures/$name')
+        .readAsStringSync();
 
 MockClient openMeteoClient({bool marineFails = false, Object? throwOnRequest}) {
   return MockClient((http.Request request) async {

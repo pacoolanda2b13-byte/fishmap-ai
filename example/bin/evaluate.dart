@@ -43,7 +43,8 @@ Future<void> main(List<String> args) async {
     latitude: latitude,
     longitude: longitude,
     date: date,
-    logger: verbose ? ConsoleLogger(minLevel: LogLevel.debug) : const NoopLogger(),
+    logger:
+        verbose ? ConsoleLogger(minLevel: LogLevel.debug) : const NoopLogger(),
   );
 
   result.fold(
@@ -61,7 +62,8 @@ void _printEvaluations(List<SpeciesEvaluation> evaluations) {
   for (final SpeciesEvaluation e in evaluations) {
     stdout
       ..writeln('── ${e.commonNameFr} ' '─' * (28 - e.commonNameFr.length))
-      ..writeln('Score       : ${e.score}/100 (${e.scored.result.level.labelFr})')
+      ..writeln(
+          'Score       : ${e.score}/100 (${e.scored.result.level.labelFr})')
       ..writeln('Confiance   : ${e.confidence}/100'
           '${e.scored.result.hasLimitedData ? '  ⚠ données limitées' : ''}')
       ..writeln('Explication : ${e.explanation}')

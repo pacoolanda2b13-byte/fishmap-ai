@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:convert';
 import 'dart:io';
 
 import 'package:core/core.dart';
@@ -9,7 +8,8 @@ import 'package:test/test.dart';
 import 'package:weather/weather.dart';
 import 'package:weather_openmeteo/weather_openmeteo.dart';
 
-String fixtureText(String name) => File('test/fixtures/$name').readAsStringSync();
+String fixtureText(String name) =>
+    File('test/fixtures/$name').readAsStringSync();
 
 /// Client simulant les deux API Open-Meteo à partir des fixtures.
 MockClient routedClient({
@@ -60,7 +60,8 @@ void main() {
       expect(forecast.samples.length, 6);
       expect(forecast.location, solenzara);
 
-      final WeatherData? at19 = forecast.nearest(DateTime.utc(2026, 10, 15, 19));
+      final WeatherData? at19 =
+          forecast.nearest(DateTime.utc(2026, 10, 15, 19));
       expect(at19!.windSpeedKmh, 14.4);
       expect(at19.waveHeightM, 0.51);
       expect(at19.seaTemperatureC, 19.5);
