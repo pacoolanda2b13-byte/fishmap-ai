@@ -2,10 +2,22 @@
 
 Fiches de connaissances des espèces MVP de FishMap AI.
 
-Ce dossier est la **source de vérité** de la calibration FishScore. Les
-paramètres ne doivent **jamais** être codés en dur dans le moteur : le package
-`fishscore` construit ses `SpeciesProfile` à partir de ces fiches via
-`SpeciesProfile.fromJson`.
+Ce dossier est la **seule source de vérité** de la calibration FishScore. Les
+paramètres ne sont **jamais** codés en dur ni maintenus à la main dans le
+moteur : le catalogue Dart est **généré automatiquement** depuis ces fiches.
+
+```
+knowledge/species/*.json ──▶ generator ──▶ species_catalog.g.dart
+```
+
+Après toute modification d'une fiche :
+
+```bash
+cd packages/fishscore
+dart run tool/generate_species_catalog.dart
+```
+
+La CI vérifie que le catalogue généré est à jour (`--check`).
 
 ## Zone pilote
 
@@ -13,22 +25,49 @@ Solenzara → Aléria (côte est de la Corse).
 
 ## Espèces
 
-| Slug | Nom | Statut calibration |
+| Slug | Nom | Confiance |
 |---|---|---|
-| `barracuda` | Barracuda | hypothèse |
-| `loup` | Loup (bar) | hypothèse |
-| `dorade-royale` | Dorade royale | hypothèse |
-| `liche` | Liche amie | hypothèse |
+| `barracuda` | Barracuda | `hypothesis` |
+| `loup` | Loup (bar) | `hypothesis` |
+| `dorade-royale` | Dorade royale | `hypothesis` |
+| `liche` | Liche amie | `hypothesis` |
 
-## Statut de calibration
+## Niveau de confiance (`confidence`)
 
-- `hypothesis` — valeurs prudentes non encore validées scientifiquement, à
-  confirmer par des sources fiables ou un volume suffisant d'observations
-  terrain ;
-- `validated` — valeurs confirmées et référencées.
+- `hypothesis` — valeurs prudentes non encore vérifiées ;
+- `observed` — valeurs appuyées par un volume d'observations terrain ;
+- `validated` — valeurs confirmées par des sources fiables et référencées.
 
-Tant qu'une fiche est en `hypothesis`, l'application doit rester prudente dans
-la présentation des scores.
+Tant qu'une fiche n'est pas `validated`, l'application doit rester prudente
+dans la présentation des scores.
+
+## Sources traçables (`sources`)
+
+Chaque fiche liste des sources **typées** justifiant sa calibration :
+
+| Type | Description |
+|---|---|
+| `ifremer` | données ou publications Ifremer |
+| `scientific_publication` | publication scientifique |
+| `fishing_guide` | guide de pêche reconnu |
+| `field_observation` | observations terrain agrégées |
+
+Chaque entrée peut préciser `count` (nombre d'éléments), `reference`, `url`
+et `note` :
+
+```json
+"sources": [
+  { "type": "field_observation", "count": 42 },
+  { "type": "scientific_publication", "count": 3, "reference": "…" }
+]
+```
+
+Objectif produit : toute recommandation doit être **traçable**. FishMap doit
+pouvoir expliquer, par exemple :
+
+> Score calculé grâce à 42 observations terrain + 3 publications scientifiques.
+
+Le moteur expose cette information via `SpeciesProfile.provenanceSummaryFr`.
 
 ## Format
 

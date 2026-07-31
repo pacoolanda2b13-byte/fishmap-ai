@@ -6,7 +6,8 @@
   "required": [
     "slug",
     "common_name_fr",
-    "calibration_status",
+    "confidence",
+    "sources",
     "calibration"
   ],
   "additionalProperties": false,
@@ -22,13 +23,34 @@
       "type": "array",
       "items": { "type": "string" }
     },
-    "calibration_status": {
+    "confidence": {
       "type": "string",
-      "enum": ["hypothesis", "validated"]
+      "enum": ["hypothesis", "observed", "validated"],
+      "description": "hypothesis: non vérifié ; observed: appuyé par des observations terrain ; validated: confirmé par des sources fiables."
     },
     "sources": {
       "type": "array",
-      "items": { "type": "string" }
+      "description": "Sources traçables justifiant la calibration. Permet d'expliquer un score (ex. « 42 observations terrain + 3 publications scientifiques »).",
+      "items": {
+        "type": "object",
+        "required": ["type"],
+        "additionalProperties": false,
+        "properties": {
+          "type": {
+            "type": "string",
+            "enum": [
+              "ifremer",
+              "scientific_publication",
+              "fishing_guide",
+              "field_observation"
+            ]
+          },
+          "count": { "type": "integer", "minimum": 1 },
+          "reference": { "type": "string" },
+          "url": { "type": "string" },
+          "note": { "type": "string" }
+        }
+      }
     },
     "notes": { "type": "string" },
     "calibration": {

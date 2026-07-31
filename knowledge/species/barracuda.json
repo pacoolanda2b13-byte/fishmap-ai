@@ -6,23 +6,56 @@
   "habitat": "Tombants rocheux, secs, herbiers de posidonie et abords des structures. Présent de la surface jusqu'à une trentaine de mètres.",
   "behaviour": "Chasse en embuscade ou en petits groupes. Très réactif aux leurres rapides quand la lumière est faible et l'eau claire.",
   "best_periods": "Fin d'été et automne, lorsque l'eau reste chaude. Fenêtres aube et crépuscule privilégiées.",
-  "techniques": ["leurres-durs", "leurres-souples"],
-  "calibration_status": "hypothesis",
+  "techniques": [
+    "leurres-durs",
+    "leurres-souples"
+  ],
+  "confidence": "hypothesis",
   "sources": [],
   "notes": "Calibration initiale prudente pour la zone Solenzara-Aléria, à confirmer par des observations terrain.",
   "calibration": {
-    "wind": { "ideal_max_kmh": 20, "tolerable_max_kmh": 42 },
-    "waves": { "ideal_min_m": 0.1, "ideal_max_m": 0.6, "falloff_m": 0.9 },
+    "wind": {
+      "ideal_max_kmh": 20,
+      "tolerable_max_kmh": 42
+    },
+    "waves": {
+      "ideal_min_m": 0.1,
+      "ideal_max_m": 0.6,
+      "falloff_m": 0.9
+    },
     "hours": {
-      "prime": [[5, 8], [18, 22]],
-      "good": [[8, 10], [16, 18]],
+      "prime": [
+        [
+          5,
+          8
+        ],
+        [
+          18,
+          22
+        ]
+      ],
+      "good": [
+        [
+          8,
+          10
+        ],
+        [
+          16,
+          18
+        ]
+      ],
       "baseline_score": 25
     },
     "thermal": {
       "ideal_min_c": 18,
       "ideal_max_c": 24,
       "tolerance_c": 6,
-      "season_scores": { "summer": 85, "autumn": 100, "spring": 55, "winter": 25 }
+      "season_scores": {
+        "summer": 85,
+        "autumn": 100,
+        "spring": 55,
+        "winter": 25
+      }
     },
     "bottoms": {
       "rock": 90,
@@ -32,8 +65,14 @@
       "sand": 40,
       "mud": 25
     },
-    "depth": { "ideal_min_m": 3, "ideal_max_m": 25, "falloff_m": 20 },
-    "moon": { "favors_spring_tide": true },
+    "depth": {
+      "ideal_min_m": 3,
+      "ideal_max_m": 25,
+      "falloff_m": 20
+    },
+    "moon": {
+      "favors_spring_tide": true
+    },
     "weight_overrides": {}
   }
 }
