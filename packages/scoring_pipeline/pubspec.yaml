@@ -1,0 +1,23 @@
+name: scoring_pipeline
+description: >-
+  Couche de composition de FishMap AI. Seul endroit autorisé à connaître
+  plusieurs packages métier : assemble une prévision météo et le contexte d'un
+  spot en entrée FishScore, puis produit un score explicable.
+version: 0.1.0
+publish_to: none
+
+environment:
+  sdk: ">=3.4.0 <4.0.0"
+
+dependencies:
+  meta: ^1.11.0
+  core:
+    path: ../core
+  fishscore:
+    path: ../fishscore
+  weather:
+    path: ../weather
+
+dev_dependencies:
+  lints: ^4.0.0
+  test: ^1.25.0
