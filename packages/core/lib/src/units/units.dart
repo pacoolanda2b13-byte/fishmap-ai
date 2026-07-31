@@ -16,6 +16,9 @@ class Units {
   /// Nœuds → kilomètres par heure.
   static double knotsToKmh(double knots) => knots * 1.852;
 
+  /// Miles par heure → kilomètres par heure.
+  static double mphToKmh(double mph) => mph * 1.609344;
+
   /// Kilomètres par heure → nœuds.
   static double kmhToKnots(double kmh) => kmh / 1.852;
 
