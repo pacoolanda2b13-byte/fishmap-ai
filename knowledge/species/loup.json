@@ -1,0 +1,39 @@
+{
+  "slug": "loup",
+  "common_name_fr": "Loup",
+  "scientific_name": "Dicentrarchus labrax",
+  "summary": "Bar méditerranéen, prédateur opportuniste des eaux agitées, actif à l'aube, au crépuscule et la nuit.",
+  "habitat": "Bordure côtière, roches battues, embouchures, plages en surfcasting. Souvent dans le ressac et l'écume.",
+  "behaviour": "Chasse dans l'eau brassée où il repère alevins et crustacés. Réputé plus mordeur en mer légèrement formée et par temps couvert.",
+  "best_periods": "Automne et printemps, avec de bonnes fenêtres hivernales. Aube, crépuscule et première partie de nuit.",
+  "techniques": ["leurres-durs", "leurres-souples", "surfcasting"],
+  "calibration_status": "hypothesis",
+  "sources": [],
+  "notes": "Calibration initiale prudente pour la zone Solenzara-Aléria, à confirmer par des observations terrain.",
+  "calibration": {
+    "wind": { "ideal_max_kmh": 30, "tolerable_max_kmh": 55 },
+    "waves": { "ideal_min_m": 0.3, "ideal_max_m": 1.2, "falloff_m": 1.1 },
+    "hours": {
+      "prime": [[5, 8], [18, 23], [0, 2]],
+      "good": [[8, 10], [16, 18]],
+      "baseline_score": 30
+    },
+    "thermal": {
+      "ideal_min_c": 12,
+      "ideal_max_c": 20,
+      "tolerance_c": 6,
+      "season_scores": { "autumn": 100, "spring": 90, "winter": 75, "summer": 55 }
+    },
+    "bottoms": {
+      "rock": 85,
+      "mixed": 80,
+      "sand": 70,
+      "gravel": 65,
+      "posidonia": 60,
+      "mud": 40
+    },
+    "depth": { "ideal_min_m": 1, "ideal_max_m": 15, "falloff_m": 18 },
+    "moon": { "favors_spring_tide": true },
+    "weight_overrides": {}
+  }
+}

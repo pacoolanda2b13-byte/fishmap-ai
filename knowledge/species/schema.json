@@ -1,0 +1,137 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://fishmap.ai/schemas/species-knowledge.json",
+  "title": "FishMap AI — Fiche de connaissance espèce",
+  "type": "object",
+  "required": [
+    "slug",
+    "common_name_fr",
+    "calibration_status",
+    "calibration"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "slug": { "type": "string", "pattern": "^[a-z0-9-]+$" },
+    "common_name_fr": { "type": "string" },
+    "scientific_name": { "type": "string" },
+    "summary": { "type": "string" },
+    "habitat": { "type": "string" },
+    "behaviour": { "type": "string" },
+    "best_periods": { "type": "string" },
+    "techniques": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "calibration_status": {
+      "type": "string",
+      "enum": ["hypothesis", "validated"]
+    },
+    "sources": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "notes": { "type": "string" },
+    "calibration": {
+      "type": "object",
+      "required": ["wind", "waves", "hours", "thermal", "bottoms", "depth", "moon"],
+      "additionalProperties": false,
+      "properties": {
+        "wind": {
+          "type": "object",
+          "required": ["ideal_max_kmh", "tolerable_max_kmh"],
+          "additionalProperties": false,
+          "properties": {
+            "ideal_max_kmh": { "type": "number", "minimum": 0 },
+            "tolerable_max_kmh": { "type": "number", "minimum": 0 }
+          }
+        },
+        "waves": {
+          "type": "object",
+          "required": ["ideal_min_m", "ideal_max_m", "falloff_m"],
+          "additionalProperties": false,
+          "properties": {
+            "ideal_min_m": { "type": "number", "minimum": 0 },
+            "ideal_max_m": { "type": "number", "minimum": 0 },
+            "falloff_m": { "type": "number", "exclusiveMinimum": 0 }
+          }
+        },
+        "hours": {
+          "type": "object",
+          "required": ["prime", "good", "baseline_score"],
+          "additionalProperties": false,
+          "properties": {
+            "prime": { "$ref": "#/definitions/hourWindows" },
+            "good": { "$ref": "#/definitions/hourWindows" },
+            "baseline_score": { "type": "integer", "minimum": 0, "maximum": 100 }
+          }
+        },
+        "thermal": {
+          "type": "object",
+          "required": ["ideal_min_c", "ideal_max_c", "tolerance_c", "season_scores"],
+          "additionalProperties": false,
+          "properties": {
+            "ideal_min_c": { "type": "number" },
+            "ideal_max_c": { "type": "number" },
+            "tolerance_c": { "type": "number", "exclusiveMinimum": 0 },
+            "season_scores": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "winter": { "$ref": "#/definitions/score" },
+                "spring": { "$ref": "#/definitions/score" },
+                "summer": { "$ref": "#/definitions/score" },
+                "autumn": { "$ref": "#/definitions/score" }
+              }
+            }
+          }
+        },
+        "bottoms": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "sand": { "$ref": "#/definitions/score" },
+            "gravel": { "$ref": "#/definitions/score" },
+            "rock": { "$ref": "#/definitions/score" },
+            "posidonia": { "$ref": "#/definitions/score" },
+            "mixed": { "$ref": "#/definitions/score" },
+            "mud": { "$ref": "#/definitions/score" }
+          }
+        },
+        "depth": {
+          "type": "object",
+          "required": ["ideal_min_m", "ideal_max_m", "falloff_m"],
+          "additionalProperties": false,
+          "properties": {
+            "ideal_min_m": { "type": "number", "minimum": 0 },
+            "ideal_max_m": { "type": "number", "minimum": 0 },
+            "falloff_m": { "type": "number", "exclusiveMinimum": 0 }
+          }
+        },
+        "moon": {
+          "type": "object",
+          "required": ["favors_spring_tide"],
+          "additionalProperties": false,
+          "properties": {
+            "favors_spring_tide": { "type": "boolean" }
+          }
+        },
+        "weight_overrides": {
+          "type": "object",
+          "additionalProperties": { "type": "number", "minimum": 0 }
+        }
+      }
+    }
+  },
+  "definitions": {
+    "score": { "type": "integer", "minimum": 0, "maximum": 100 },
+    "hourWindows": {
+      "type": "array",
+      "items": {
+        "type": "array",
+        "minItems": 2,
+        "maxItems": 2,
+        "items": { "type": "integer", "minimum": 0, "maximum": 23 }
+      }
+    }
+  }
+}

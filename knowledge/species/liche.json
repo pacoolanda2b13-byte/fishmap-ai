@@ -1,0 +1,39 @@
+{
+  "slug": "liche",
+  "common_name_fr": "Liche amie",
+  "scientific_name": "Lichia amia",
+  "summary": "Grand carangidé pélagique estival, chasseur puissant qui attaque dans la vague au lever et au coucher du soleil.",
+  "habitat": "Plages, abords des embouchures et zones de courant. Chasse souvent près du bord dans l'eau brassée.",
+  "behaviour": "Prédateur rapide poursuivant les bancs de petits poissons. Très actif quand l'eau est chaude et légèrement agitée.",
+  "best_periods": "Cœur de l'été, avec des fenêtres aube et crépuscule marquées.",
+  "techniques": ["leurres-durs", "leurres-souples"],
+  "calibration_status": "hypothesis",
+  "sources": [],
+  "notes": "Calibration initiale prudente pour la zone Solenzara-Aléria, à confirmer par des observations terrain.",
+  "calibration": {
+    "wind": { "ideal_max_kmh": 22, "tolerable_max_kmh": 46 },
+    "waves": { "ideal_min_m": 0.2, "ideal_max_m": 0.9, "falloff_m": 1.0 },
+    "hours": {
+      "prime": [[5, 8], [18, 21]],
+      "good": [[8, 10], [16, 18]],
+      "baseline_score": 25
+    },
+    "thermal": {
+      "ideal_min_c": 20,
+      "ideal_max_c": 26,
+      "tolerance_c": 5,
+      "season_scores": { "summer": 100, "autumn": 70, "spring": 45, "winter": 15 }
+    },
+    "bottoms": {
+      "sand": 80,
+      "mixed": 75,
+      "posidonia": 70,
+      "gravel": 70,
+      "rock": 65,
+      "mud": 40
+    },
+    "depth": { "ideal_min_m": 2, "ideal_max_m": 20, "falloff_m": 18 },
+    "moon": { "favors_spring_tide": true },
+    "weight_overrides": {}
+  }
+}

@@ -1,0 +1,39 @@
+{
+  "slug": "dorade-royale",
+  "common_name_fr": "Dorade royale",
+  "scientific_name": "Sparus aurata",
+  "summary": "Sparidé fouilleur de fonds meubles, amateur d'eaux calmes et chaudes, plutôt actif de jour.",
+  "habitat": "Fonds de sable et herbiers, abords des embouchures et zones conchylicoles. Se nourrit de coquillages et crustacés qu'elle broie.",
+  "behaviour": "Méfiante, recherche une eau claire et peu agitée. Mord surtout de jour avec des pics à l'aube et en fin d'après-midi.",
+  "best_periods": "Été et début d'automne, quand l'eau est la plus chaude.",
+  "techniques": ["appats-naturels", "surfcasting"],
+  "calibration_status": "hypothesis",
+  "sources": [],
+  "notes": "Calibration initiale prudente pour la zone Solenzara-Aléria, à confirmer par des observations terrain.",
+  "calibration": {
+    "wind": { "ideal_max_kmh": 15, "tolerable_max_kmh": 32 },
+    "waves": { "ideal_min_m": 0, "ideal_max_m": 0.4, "falloff_m": 0.7 },
+    "hours": {
+      "prime": [[5, 9], [17, 20]],
+      "good": [[9, 17]],
+      "baseline_score": 35
+    },
+    "thermal": {
+      "ideal_min_c": 18,
+      "ideal_max_c": 24,
+      "tolerance_c": 5,
+      "season_scores": { "summer": 100, "autumn": 85, "spring": 55, "winter": 25 }
+    },
+    "bottoms": {
+      "sand": 90,
+      "posidonia": 85,
+      "gravel": 75,
+      "mixed": 65,
+      "mud": 60,
+      "rock": 45
+    },
+    "depth": { "ideal_min_m": 2, "ideal_max_m": 15, "falloff_m": 15 },
+    "moon": { "favors_spring_tide": false },
+    "weight_overrides": {}
+  }
+}
