@@ -1,8 +1,9 @@
+import 'package:core/core.dart';
 import 'package:test/test.dart';
 import 'package:weather/weather.dart';
 
 void main() {
-  const GeoPoint corse = GeoPoint(latitude: 41.86, longitude: 9.40);
+  const Coordinates corse = Coordinates(latitude: 41.86, longitude: 9.40);
 
   group('StaticWeatherProvider', () {
     test('restitue une prévision fournie filtrée sur l\'intervalle', () async {

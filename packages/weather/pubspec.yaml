@@ -1,10 +1,10 @@
 name: weather
 description: >-
   Couche météo provider-agnostic de FishMap AI. Normalise les données météo et
-  marines (WeatherData), les organise en séries temporelles (WeatherForecast) et
-  les transforme en entrées FishScore (WeatherMapper) sans dépendre d'un
-  fournisseur particulier.
-version: 0.1.0
+  marines (WeatherData), les organise en séries temporelles (WeatherForecast)
+  et orchestre plusieurs fournisseurs interchangeables (WeatherRepository)
+  avec repli automatique. Ne dépend que de core.
+version: 0.2.0
 publish_to: none
 
 environment:
@@ -12,8 +12,8 @@ environment:
 
 dependencies:
   meta: ^1.11.0
-  fishscore:
-    path: ../fishscore
+  core:
+    path: ../core
 
 dev_dependencies:
   lints: ^4.0.0

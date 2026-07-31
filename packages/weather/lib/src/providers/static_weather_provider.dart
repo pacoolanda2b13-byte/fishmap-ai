@@ -1,6 +1,7 @@
 import 'dart:math' as math;
 
-import '../models/geo_point.dart';
+import 'package:core/core.dart';
+
 import '../models/weather_data.dart';
 import '../models/weather_forecast.dart';
 import 'weather_provider.dart';
@@ -20,7 +21,7 @@ class StaticWeatherProvider implements WeatherProvider {
 
   @override
   Future<WeatherForecast> fetchForecast(
-    GeoPoint location, {
+    Coordinates location, {
     required DateTime from,
     required DateTime to,
   }) async {
@@ -38,7 +39,7 @@ class StaticWeatherProvider implements WeatherProvider {
   /// maximale l'après-midi, pression en lente évolution). Utile pour tester la
   /// chaîne complète sans dépendre d'un fournisseur réel.
   factory StaticWeatherProvider.synthetic({
-    required GeoPoint location,
+    required Coordinates location,
     required DateTime from,
     required DateTime to,
     Duration step = const Duration(hours: 1),

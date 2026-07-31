@@ -1,4 +1,5 @@
-import '../models/geo_point.dart';
+import 'package:core/core.dart';
+
 import '../models/weather_forecast.dart';
 
 /// Contrat d'un fournisseur de données météo/marines.
@@ -16,19 +17,18 @@ abstract interface class WeatherProvider {
   ///
   /// Doit lever une [WeatherProviderException] en cas d'échec récupérable.
   Future<WeatherForecast> fetchForecast(
-    GeoPoint location, {
+    Coordinates location, {
     required DateTime from,
     required DateTime to,
   });
 }
 
 /// Erreur levée par un fournisseur météo.
-class WeatherProviderException implements Exception {
-  const WeatherProviderException(this.message, {this.provider, this.cause});
+class WeatherProviderException extends AppException {
+  const WeatherProviderException(super.message, {this.provider, super.cause});
 
-  final String message;
+  /// Nom du fournisseur à l'origine de l'erreur.
   final String? provider;
-  final Object? cause;
 
   @override
   String toString() {

@@ -1,6 +1,6 @@
+import 'package:core/core.dart';
 import 'package:meta/meta.dart';
 
-import 'geo_point.dart';
 import 'weather_data.dart';
 
 /// Série temporelle de [WeatherData] pour un point donné.
@@ -20,7 +20,7 @@ class WeatherForecast {
         );
 
   /// Point de référence de la prévision.
-  final GeoPoint location;
+  final Coordinates location;
 
   /// Échantillons triés par `observedAt` croissant.
   final List<WeatherData> samples;
@@ -76,7 +76,8 @@ class WeatherForecast {
 
   factory WeatherForecast.fromJson(Map<String, dynamic> json) =>
       WeatherForecast(
-        location: GeoPoint.fromJson(json['location'] as Map<String, dynamic>),
+        location:
+            Coordinates.fromJson(json['location'] as Map<String, dynamic>),
         samples: ((json['samples'] as List<dynamic>?) ?? const <dynamic>[])
             .map((dynamic e) => WeatherData.fromJson(e as Map<String, dynamic>))
             .toList(),

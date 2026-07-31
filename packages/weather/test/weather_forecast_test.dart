@@ -1,3 +1,4 @@
+import 'package:core/core.dart';
 import 'package:test/test.dart';
 import 'package:weather/weather.dart';
 
@@ -8,7 +9,7 @@ WeatherData sample(int hour, {double? pressure}) => WeatherData(
     );
 
 void main() {
-  const GeoPoint corse = GeoPoint(latitude: 41.86, longitude: 9.40);
+  const Coordinates corse = Coordinates(latitude: 41.86, longitude: 9.40);
 
   group('WeatherForecast', () {
     test('trie les échantillons par ordre chronologique', () {
@@ -86,16 +87,6 @@ void main() {
       final WeatherForecast back = WeatherForecast.fromJson(f.toJson());
       expect(back.samples.length, 2);
       expect(back.location, corse);
-    });
-  });
-
-  group('GeoPoint', () {
-    test('distance approximative plausible', () {
-      const GeoPoint solenzara = GeoPoint(latitude: 41.86, longitude: 9.40);
-      const GeoPoint aleria = GeoPoint(latitude: 42.10, longitude: 9.51);
-      final double d = solenzara.distanceKmTo(aleria);
-      expect(d, greaterThan(20));
-      expect(d, lessThan(40));
     });
   });
 }

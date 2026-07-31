@@ -1,78 +1,71 @@
 # weather
 
-Couche météo **provider-agnostic** de FishMap AI.
+Couche météo **provider-agnostic et multi-fournisseurs** de FishMap AI.
 
-Elle normalise les données météo et marines, les organise en séries temporelles
-et les transforme en entrées FishScore — **sans dépendre d'un fournisseur
-particulier**. Changer d'API météo (Open-Meteo, Stormglass, Météo-France…)
-n'impacte que l'adaptateur, jamais le reste de l'application.
+Ne dépend que de [`core`](../core) — jamais d'un autre package métier.
 
-## Pipeline
+## Architecture
 
 ```
-WeatherProvider ──▶ WeatherForecast ──▶ WeatherMapper ──▶ FishScoreInput
-   (interface)        (série de            (pont)          (moteur FishScore)
-                       WeatherData)
+WeatherRepository            ← seule porte d'entrée météo
+   ├─ OpenMeteoProvider      (à venir : premier adaptateur réel)
+   ├─ StormGlassProvider     (à venir)
+   ├─ OpenWeatherProvider    (à venir)
+   └─ StaticWeatherProvider  (mémoire — hors ligne, démos, tests)
+              │
+              ▼
+        WeatherForecast  (série triée de WeatherData normalisées)
 ```
 
-- **`WeatherData`** — observation/prévision à un instant, **normalisée** (km/h,
-  m, s, °C, hPa). Champs optionnels : un fournisseur ne couvre pas tout.
-- **`WeatherForecast`** — série triée de `WeatherData` ; accès par proximité
-  temporelle (`nearest`) et calcul de la **tendance de pression sur 3 h**.
-- **`WeatherProvider`** — interface de récupération. Ce package ne contient
-  **aucun** fournisseur réseau ; seulement le contrat et un fournisseur en
-  mémoire.
-- **`StaticWeatherProvider`** — fournisseur en mémoire pour le dev hors ligne,
-  les démos et les tests, avec un générateur **déterministe** (`.synthetic`).
-- **`WeatherMapper`** — convertit une prévision + un `SpotContext` en
-  `FishScoreInput`.
-- **`WeatherUnits`** — conversions d'unités pour les adaptateurs de
-  fournisseurs.
+Le dépôt choisit le meilleur fournisseur disponible et masque les pannes :
+
+- **repli automatique** — les fournisseurs sont essayés dans l'ordre ;
+- **comparaison** — `fetchFromAll` interroge tout le monde (base de la future
+  fusion de sources) ;
+- **hors ligne** — un fournisseur local en dernier garantit une réponse ;
+- **échecs typés** — retour en `Result`/`Failure`, jamais d'exception qui fuit.
+
+## Composants
+
+| Élément | Rôle |
+|---|---|
+| `WeatherData` | observation/prévision à un instant, **normalisée** (km/h, m, s, °C, hPa) |
+| `WeatherForecast` | série triée + `nearest()` + tendance de pression sur 3 h |
+| `WeatherProvider` | contrat de récupération (aucun fournisseur réseau embarqué) |
+| `StaticWeatherProvider` | fournisseur mémoire + générateur déterministe `.synthetic` |
+| `WeatherRepository` | orchestration multi-fournisseurs, repli, comparaison |
 
 ## Utilisation
 
 ```dart
-import 'package:fishscore/fishscore.dart';
+import 'package:core/core.dart';
 import 'package:weather/weather.dart';
 
-const location = GeoPoint(latitude: 41.86, longitude: 9.40); // côte est corse
+const location = Coordinates(latitude: 41.86, longitude: 9.40);
 
-// 1. Un fournisseur (ici synthétique et hors ligne).
-final provider = StaticWeatherProvider.synthetic(
-  location: location,
-  from: DateTime.utc(2026, 10, 15, 0),
-  to: DateTime.utc(2026, 10, 15, 23),
+final repository = WeatherRepository(
+  providers: <WeatherProvider>[
+    // OpenMeteoProvider(...),                    // principal
+    StaticWeatherProvider.synthetic(              // repli hors ligne
+      location: location, from: from, to: to,
+    ),
+  ],
+  logger: ConsoleLogger(),
 );
 
-// 2. Une prévision.
-final forecast = await provider.fetchForecast(
-  location,
-  from: DateTime.utc(2026, 10, 15, 0),
-  to: DateTime.utc(2026, 10, 15, 23),
-);
+final result = await repository.fetchForecast(location, from: from, to: to);
 
-// 3. Une entrée FishScore.
-final input = const WeatherMapper().toFishScoreInput(
-  forecast: forecast,
-  speciesSlug: 'loup',
-  evaluatedAt: DateTime.utc(2026, 10, 15, 19),
-  spot: const SpotContext(
-    spotSuitability: 80,
-    bottomType: BottomType.rock,
-    depthMeters: 6,
-    spotQuality: DataQuality.observed,
-  ),
+result.fold(
+  onSuccess: (p) => print('${p.providerName} → ${p.forecast.samples.length}'),
+  onFailure: (f) => print('indisponible : ${f.code}'),
 );
-
-// 4. Un score.
-final result = FishScoreEngine().evaluate(input);
 ```
 
-## Écrire un vrai fournisseur
+## Écrire un fournisseur
 
-Implémenter `WeatherProvider` dans un package/adaptateur dédié, convertir les
-unités natives via `WeatherUnits`, et retourner un `WeatherForecast` de
-`WeatherData` normalisées. Le reste de l'application n'a pas à changer.
+Implémenter `WeatherProvider`, convertir les unités natives via `Units` (de
+`core`), retourner un `WeatherForecast` de `WeatherData` normalisées, et lever
+`WeatherProviderException` en cas d'échec. Le dépôt s'occupe du reste.
 
 ```dart
 class OpenMeteoProvider implements WeatherProvider {
@@ -80,13 +73,19 @@ class OpenMeteoProvider implements WeatherProvider {
   String get name => 'open-meteo';
 
   @override
-  Future<WeatherForecast> fetchForecast(GeoPoint location,
+  Future<WeatherForecast> fetchForecast(Coordinates location,
       {required DateTime from, required DateTime to}) async {
-    // 1. appel HTTP, 2. WeatherUnits.msToKmh(...), 3. WeatherData(...).
+    // 1. appel HTTP, 2. Units.msToKmh(...), 3. WeatherData(...).
     throw UnimplementedError();
   }
 }
 ```
+
+## Et le FishScore ?
+
+Ce package **ignore** l'existence de `fishscore`. La conversion
+`WeatherForecast → FishScoreInput` vit dans la couche de composition
+[`scoring_pipeline`](../scoring_pipeline).
 
 ## Développement
 
